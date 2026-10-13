@@ -90,22 +90,11 @@ class AccessService {
   /// Runs a SELECT SQL query and returns rows
   static Future<List<Map<String, dynamic>>> query(String dbPath, String sql) async {
     final exe = await _getBridgeExePath();
-    final process = await Process.start(exe, ['query', dbPath, '--stdin']);
-    process.stdin.writeln(sql);
-    await process.stdin.flush();
-    await process.stdin.close();
+    final result = await Process.run(exe, ['query', dbPath, sql]);
+    final outText = result.stdout.toString().trim();
 
-    final stdoutBuf = StringBuffer();
-    final stderrBuf = StringBuffer();
-
-    process.stdout.transform(utf8.decoder).listen((data) => stdoutBuf.write(data));
-    process.stderr.transform(utf8.decoder).listen((data) => stderrBuf.write(data));
-
-    final exitCode = await process.exitCode;
-    final outText = stdoutBuf.toString().trim();
-
-    if (exitCode != 0) {
-      throw Exception('SQL query error: ${stderrBuf.toString().isNotEmpty ? stderrBuf.toString() : outText}');
+    if (result.exitCode != 0) {
+      throw Exception('SQL query error: ${result.stderr.toString().isNotEmpty ? result.stderr : outText}');
     }
 
     if (outText.startsWith('{') && outText.contains('"status":"error"')) {
@@ -123,24 +112,13 @@ class AccessService {
   /// Executes an INSERT, UPDATE, or DELETE SQL statement
   static Future<AccessExecuteResult> execute(String dbPath, String sql) async {
     final exe = await _getBridgeExePath();
-    final process = await Process.start(exe, ['execute', dbPath, '--stdin']);
-    process.stdin.writeln(sql);
-    await process.stdin.flush();
-    await process.stdin.close();
+    final result = await Process.run(exe, ['execute', dbPath, sql]);
+    final outText = result.stdout.toString().trim();
 
-    final stdoutBuf = StringBuffer();
-    final stderrBuf = StringBuffer();
-
-    process.stdout.transform(utf8.decoder).listen((data) => stdoutBuf.write(data));
-    process.stderr.transform(utf8.decoder).listen((data) => stderrBuf.write(data));
-
-    final exitCode = await process.exitCode;
-    final outText = stdoutBuf.toString().trim();
-
-    if (exitCode != 0) {
+    if (result.exitCode != 0) {
       return AccessExecuteResult(
         success: false,
-        error: stderrBuf.toString().isNotEmpty ? stderrBuf.toString() : outText,
+        error: result.stderr.toString().isNotEmpty ? result.stderr : outText,
       );
     }
 

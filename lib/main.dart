@@ -20,7 +20,7 @@ class MajGedApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MAJ GED - DBF & MS Access Manager',
+      title: 'DualBase Manager — DBF & MS Access Suite',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -70,7 +70,7 @@ class _MainShellState extends State<MainShell> {
           NavigationRail(
             selectedIndex: _selectedIndex,
             extended: true,
-            minExtendedWidth: 210,
+            minExtendedWidth: 230,
             leading: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
               child: Row(
@@ -88,15 +88,15 @@ class _MainShellState extends State<MainShell> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'MAJ GED',
+                        'DualBase Manager',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          letterSpacing: 0.5,
+                          fontSize: 15,
+                          letterSpacing: 0.3,
                         ),
                       ),
                       Text(
-                        'DB Bridge Suite',
+                        'DBF & Access Suite',
                         style: TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                     ],

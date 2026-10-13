@@ -19,7 +19,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('MAJ GED'), findsOneWidget);
+    expect(find.text('DualBase Manager'), findsOneWidget);
     expect(find.text('DBF (Read-Only)'), findsOneWidget);
     expect(find.text('MS Access (CRUD)'), findsOneWidget);
   });
