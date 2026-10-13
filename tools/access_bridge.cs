@@ -300,7 +300,7 @@ namespace AccessBridgeApp {
                     case '\r': sb.Append("\\r"); break;
                     case '\t': sb.Append("\\t"); break;
                     default:
-                        if (c < 32) {
+                        if (c < 32 || c > 126) {
                             sb.AppendFormat("\\u{0:X4}", (int)c);
                         } else {
                             sb.Append(c);

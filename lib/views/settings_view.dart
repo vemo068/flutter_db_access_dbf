@@ -423,6 +423,7 @@ class _SettingsViewState extends State<SettingsView> {
                   value: currentSettings.dbfEncoding,
                   items: const [
                     DropdownMenuItem(value: 'CP1252', child: Text('Windows-1252 (CP1252 / Western)')),
+                    DropdownMenuItem(value: 'CP1256', child: Text('Windows-1256 (Arabic / الشرق الأوسط)')),
                     DropdownMenuItem(value: 'UTF-8', child: Text('UTF-8')),
                     DropdownMenuItem(value: 'Latin1', child: Text('ISO-8859-1 (Latin1)')),
                   ],

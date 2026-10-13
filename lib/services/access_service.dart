@@ -53,7 +53,12 @@ class AccessService {
     if (!File(dbPath).existsSync()) return false;
     try {
       final exe = await _getBridgeExePath();
-      final result = await Process.run(exe, ['ping', dbPath]);
+      final result = await Process.run(
+        exe,
+        ['ping', dbPath],
+        stdoutEncoding: utf8,
+        stderrEncoding: utf8,
+      );
       if (result.exitCode == 0) {
         final json = jsonDecode(result.stdout.toString().trim());
         return json['status'] == 'ok';
@@ -67,7 +72,12 @@ class AccessService {
   /// Gets the list of user tables in the Access database
   static Future<List<String>> getTables(String dbPath) async {
     final exe = await _getBridgeExePath();
-    final result = await Process.run(exe, ['tables', dbPath]);
+    final result = await Process.run(
+      exe,
+      ['tables', dbPath],
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
     if (result.exitCode != 0) {
       throw Exception('Failed to get tables: ${result.stderr.toString().isNotEmpty ? result.stderr : result.stdout}');
     }
@@ -78,7 +88,12 @@ class AccessService {
   /// Gets the schema/columns for a specific table
   static Future<AccessTableSchema> getSchema(String dbPath, String tableName) async {
     final exe = await _getBridgeExePath();
-    final result = await Process.run(exe, ['schema', dbPath, tableName]);
+    final result = await Process.run(
+      exe,
+      ['schema', dbPath, tableName],
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
     if (result.exitCode != 0) {
       throw Exception('Failed to get schema for table $tableName: ${result.stderr.toString().isNotEmpty ? result.stderr : result.stdout}');
     }
@@ -90,7 +105,12 @@ class AccessService {
   /// Runs a SELECT SQL query and returns rows
   static Future<List<Map<String, dynamic>>> query(String dbPath, String sql) async {
     final exe = await _getBridgeExePath();
-    final result = await Process.run(exe, ['query', dbPath, sql]);
+    final result = await Process.run(
+      exe,
+      ['query', dbPath, sql],
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
     final outText = result.stdout.toString().trim();
 
     if (result.exitCode != 0) {
@@ -112,7 +132,12 @@ class AccessService {
   /// Executes an INSERT, UPDATE, or DELETE SQL statement
   static Future<AccessExecuteResult> execute(String dbPath, String sql) async {
     final exe = await _getBridgeExePath();
-    final result = await Process.run(exe, ['execute', dbPath, sql]);
+    final result = await Process.run(
+      exe,
+      ['execute', dbPath, sql],
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
     final outText = result.stdout.toString().trim();
 
     if (result.exitCode != 0) {
@@ -280,13 +305,15 @@ class AccessService {
       )
     ''');
 
-    // Insert sample records
+    // Insert sample records (including Arabic Unicode)
     await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('Aymane Hassouna', 'Engineering', 5500.0, #2024-01-15#, True)");
+    await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('أيمن حسونة', 'إدارة تقنية المعلومات والتحول الرقمي', 9500.0, #2023-05-01#, True)");
     await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('Sarah Connor', 'Security', 4800.0, #2023-06-20#, True)");
+    await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('فاطمة الزهراء الإدريسي', 'الموارد البشرية والشؤون الإدارية', 6800.0, #2024-02-10#, True)");
     await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('John Smith', 'Marketing', 3900.0, #2025-03-10#, False)");
     await execute(targetPath, "INSERT INTO Employees (FullName, Department, Salary, HireDate, Active) VALUES ('Elena Rostova', 'Finance', 6200.0, #2022-11-01#, True)");
 
-    // Create GED_Archives table
+    // Create Documents_GED table
     await execute(targetPath, '''
       CREATE TABLE Documents_GED (
         DocID AUTOINCREMENT PRIMARY KEY,
@@ -300,7 +327,9 @@ class AccessService {
     ''');
 
     await execute(targetPath, "INSERT INTO Documents_GED (Title, DocCategory, FileFormat, FileSizeKB, IsVerified, ArchivedDate) VALUES ('Bilan Financier 2025', 'Comptabilite', 'PDF', 1450.5, True, #2026-01-10#)");
+    await execute(targetPath, "INSERT INTO Documents_GED (Title, DocCategory, FileFormat, FileSizeKB, IsVerified, ArchivedDate) VALUES ('عقد خدمات استشارية وتقنية #88', 'الشؤون القانونية', 'PDF', 1200.0, True, #2026-02-01#)");
     await execute(targetPath, "INSERT INTO Documents_GED (Title, DocCategory, FileFormat, FileSizeKB, IsVerified, ArchivedDate) VALUES ('Contrat Cadre Client #44', 'Juridique', 'PDF', 890.0, True, #2026-02-14#)");
+    await execute(targetPath, "INSERT INTO Documents_GED (Title, DocCategory, FileFormat, FileSizeKB, IsVerified, ArchivedDate) VALUES ('تقرير تدقيق الحسابات السنوي', 'المالية والمحاسبة', 'PDF', 2340.0, True, #2026-03-15#)");
     await execute(targetPath, "INSERT INTO Documents_GED (Title, DocCategory, FileFormat, FileSizeKB, IsVerified, ArchivedDate) VALUES ('Facture Fournisseur Tech', 'Facturation', 'PDF', 320.0, False, #2026-03-05#)");
   }
 }
